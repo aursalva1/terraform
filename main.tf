@@ -15,7 +15,7 @@ resource "aws_vpc" "eks_vpc" {
 resource "aws_subnet" "eks_subnet" {
   count = 2
   vpc_id = aws_vpc.eks_vpc.id
-  cidr_block = cidrsubnet(var.vpc_cidr, 24, count.index)  # Usar /24 en lugar de /8 para subredes más razonables
+  cidr_block = cidrsubnet(var.vpc_cidr, 22, count.index)  # Usar /22 en lugar de /8 para subredes más razonables
   availability_zone = element(data.aws_availability_zones.available.names, count.index)
   tags = {
     Name = "eks-subnet-${count.index}"
