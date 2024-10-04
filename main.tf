@@ -47,6 +47,38 @@ resource "aws_route_table_association" "eks_subnet_association" {
 }
 
 # Crear un rol de IAM para el EKS
+resource "aws_iam_role" "eks_role" {
+  name = "eks-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Principal = {
+          Service = "eks.amazonaws.com"
+        }
+        Effect = "Allow"
+        Sid = ""
+      },
+      {
+        Action = "sts:AssumeRole"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+        Effect = "Allow"
+        Sid = ""
+      },
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "eks_policy_attachment" {
+  role       = aws_iam_role.eks_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+}
+
+# Crear un rol de IAM para el grupo de nodos
 resource "aws_iam_role" "eks_node_role" {
   name = "eks-node-role"
 
@@ -118,3 +150,4 @@ output "eks_cluster_version" {
 output "eks_cluster_node_group" {
   value = aws_eks_node_group.eks_node_group.node_group_name
 }
+
