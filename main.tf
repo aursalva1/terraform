@@ -3,7 +3,7 @@ provider "aws" {
   region = var.region
 }
 
-# Crear una VPC
+# Crear una VPC t
 resource "aws_vpc" "eks_vpc" {
   cidr_block = var.vpc_cidr
   tags = {
