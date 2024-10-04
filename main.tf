@@ -47,20 +47,12 @@ resource "aws_route_table_association" "eks_subnet_association" {
 }
 
 # Crear un rol de IAM para el EKS
-resource "aws_iam_role" "eks_role" {
-  name = "eks-role"
+resource "aws_iam_role" "eks_node_role" {
+  name = "eks-node-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Principal = {
-          Service = "eks.amazonaws.com"
-        }
-        Effect = "Allow"
-        Sid = ""
-      },
       {
         Action = "sts:AssumeRole"
         Principal = {
@@ -73,10 +65,14 @@ resource "aws_iam_role" "eks_role" {
   })
 }
 
+resource "aws_iam_role_policy_attachment" "eks_node_policy_attachment" {
+  role       = aws_iam_role.eks_node_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+}
 
-resource "aws_iam_role_policy_attachment" "eks_policy_attachment" {
-  role       = aws_iam_role.eks_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+resource "aws_iam_role_policy_attachment" "eks_cni_policy_attachment" {
+  role       = aws_iam_role.eks_node_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
 }
 
 # Crear el clúster EKS
@@ -95,8 +91,8 @@ resource "aws_eks_cluster" "eks_cluster" {
 resource "aws_eks_node_group" "eks_node_group" {
   cluster_name    = aws_eks_cluster.eks_cluster.name
   node_group_name = "${var.cluster_name}-node-group"
-  node_role_arn   = aws_iam_role.eks_role.arn
-  subnet_ids      = aws_subnet.eks_subnet[*].id  # Cambia 'subnets' por 'subnet_ids'
+  node_role_arn   = aws_iam_role.eks_node_role.arn  # Cambia aquí el ARN del nuevo rol
+  subnet_ids      = aws_subnet.eks_subnet[*].id
 
   scaling_config {
     desired_size = var.desired_capacity
