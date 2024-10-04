@@ -15,7 +15,7 @@ resource "aws_vpc" "eks_vpc" {
 resource "aws_subnet" "eks_subnet" {
   count = 2
   vpc_id = aws_vpc.eks_vpc.id
-  cidr_block = cidrsubnet(var.vpc_cidr, 8, count.index)
+  cidr_block = cidrsubnet(var.vpc_cidr, 24, count.index)  # Usar /24 en lugar de /8 para subredes más razonables
   availability_zone = element(data.aws_availability_zones.available.names, count.index)
   tags = {
     Name = "eks-subnet-${count.index}"
@@ -84,7 +84,7 @@ resource "aws_eks_node_group" "eks_node_group" {
   cluster_name    = aws_eks_cluster.eks_cluster.name
   node_group_name = "${var.cluster_name}-node-group"
   node_role_arn   = aws_iam_role.eks_role.arn
-  subnets         = aws_subnet.eks_subnet[*].id
+  subnet_ids      = aws_subnet.eks_subnet[*].id  # Cambia 'subnets' por 'subnet_ids'
 
   scaling_config {
     desired_size = var.desired_capacity
