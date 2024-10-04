@@ -32,15 +32,13 @@ jobs:
     # 4. Initialize Terraform
     - name: Terraform Init
       run: terraform init
-      working-directory: ./terraform
 
     # 5. Plan Terraform
     - name: Terraform Plan
       run: terraform plan
-      working-directory: ./terraform
 
     # 6. Apply Terraform
     - name: Terraform Apply
       if: success()  # Solo si el plan fue exitoso
       run: terraform apply -auto-approve
-      working-directory: ./terraform
+
