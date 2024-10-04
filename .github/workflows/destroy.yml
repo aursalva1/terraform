@@ -1,0 +1,27 @@
+name: Terraform Destroy
+
+on:
+  workflow_dispatch: # Permite ejecutar manualmente el flujo de trabajo desde la interfaz de GitHub
+
+jobs:
+  destroy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v2
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.0  # Especifica la versión de Terraform que deseas usar
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Destroy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-east-1  # Cambia esto a tu región si es necesario
+        run: terraform destroy -auto-approve  # Elimina los recursos sin pedir confirmación
