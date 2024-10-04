@@ -19,6 +19,9 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
+      - name: Show Terraform State
+        run: terraform state list
+
       - name: Terraform Destroy
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
