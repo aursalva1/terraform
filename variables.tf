@@ -33,3 +33,13 @@ variable "vpc_cidr" {
   description = "CIDR block para la VPC"
   default     = "10.0.0.0/16"
 }
+
+variable "key_name" {
+  description = "Nombre de la clave SSH para acceder a las instancias EC2"
+  default     = "terraadmin"  # Reemplaza con tu clave SSH
+}
+# variables.tf
+variable "subnet_cidr" {
+  description = "CIDR block for the subnet in the VPC"
+  default     = "10.0.1.0/24"
+}
